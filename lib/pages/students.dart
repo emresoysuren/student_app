@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_app/people.dart';
 import 'package:student_app/repository/students_repository.dart';
 
-class StudentsPage extends StatefulWidget {
-  final StudentsRepository studentsRepository;
-
-  const StudentsPage({super.key, required this.studentsRepository});
+class StudentsPage extends ConsumerWidget {
+  const StudentsPage({super.key});
 
   @override
-  State<StudentsPage> createState() => _StudentsPageState();
-}
-
-class _StudentsPageState extends State<StudentsPage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    StudentsRepository studentsRepository = ref.watch(studentsProvider);
     return Scaffold(
       backgroundColor: const Color(0xffe7e5df),
       appBar: AppBar(
@@ -29,19 +24,18 @@ class _StudentsPageState extends State<StudentsPage> {
               child: Padding(
                 padding: const EdgeInsets.all(36),
                 child: Text(
-                  "${widget.studentsRepository.students.length} Students",
+                  "${studentsRepository.students.length} Students",
                 ),
               ),
             ),
           ),
           Expanded(
             child: ListView.separated(
-              itemCount: widget.studentsRepository.students.length,
+              itemCount: studentsRepository.students.length,
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),
-              itemBuilder: (BuildContext context, int index) => StudentItem(
-                student: widget.studentsRepository.students.elementAt(index),
-              ),
+              itemBuilder: (BuildContext context, int index) =>
+                  StudentItem(index: index),
             ),
           ),
         ],
@@ -50,31 +44,27 @@ class _StudentsPageState extends State<StudentsPage> {
   }
 }
 
-class StudentItem extends StatefulWidget {
-  const StudentItem({
-    Key? key,
-    required this.student,
-  }) : super(key: key);
+class StudentItem extends ConsumerWidget {
+  final int index;
 
-  final Student student;
+  const StudentItem({Key? key, required this.index}) : super(key: key);
 
   @override
-  State<StudentItem> createState() => _StudentItemState();
-}
-
-class _StudentItemState extends State<StudentItem> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    StudentsRepository studentsRepository = ref.watch(studentsProvider);
     return ListTile(
-      title: Text("${widget.student.name} ${widget.student.surname}"),
+      title: Text(
+          "${studentsRepository.students[index].name} ${studentsRepository.students[index].surname}"),
       leading: Icon(
-        widget.student.gender == Gender.male ? Icons.male : Icons.female,
+        studentsRepository.students[index].gender == Gender.male
+            ? Icons.male
+            : Icons.female,
       ),
       trailing: IconButton(
-        onPressed: () => setState(() {
-          StudentsRepository.like(widget.student);
-        }),
-        icon: StudentsRepository.liked.contains(widget.student)
+        onPressed: () =>
+            ref.read(studentsProvider).like(studentsRepository.students[index]),
+        icon: studentsRepository.liked
+                .contains(studentsRepository.students[index])
             ? const Icon(Icons.favorite_rounded, color: Color(0xffee4266))
             : const Icon(Icons.favorite_border_rounded),
       ),

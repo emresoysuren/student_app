@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_app/people.dart';
 import 'package:student_app/repository/teachers_repository.dart';
 
-class TeachersPage extends StatefulWidget {
-  final TeachersRepository teachersRepository;
-
-  const TeachersPage({super.key, required this.teachersRepository});
+class TeachersPage extends ConsumerWidget {
+  const TeachersPage({super.key});
 
   @override
-  State<TeachersPage> createState() => TeachersPageState();
-}
-
-class TeachersPageState extends State<TeachersPage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    TeachersRepository teachersRepository = ref.watch(teachersProvider);
     return Scaffold(
       backgroundColor: const Color(0xffe7e5df),
       appBar: AppBar(
@@ -29,18 +24,18 @@ class TeachersPageState extends State<TeachersPage> {
               child: Padding(
                 padding: const EdgeInsets.all(36),
                 child: Text(
-                  "${widget.teachersRepository.teachers.length} Teachers",
+                  "${teachersRepository.teachers.length} Teachers",
                 ),
               ),
             ),
           ),
           Expanded(
             child: ListView.separated(
-              itemCount: widget.teachersRepository.teachers.length,
+              itemCount: teachersRepository.teachers.length,
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),
               itemBuilder: (BuildContext context, int index) => TeacherItem(
-                teacher: widget.teachersRepository.teachers.elementAt(index),
+                teacher: teachersRepository.teachers.elementAt(index),
               ),
             ),
           ),

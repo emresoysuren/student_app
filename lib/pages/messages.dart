@@ -1,26 +1,34 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_app/repository/messages_repository.dart';
 
-class MessagesPage extends StatefulWidget {
-  final MessagesRepository messagesRepository;
-  const MessagesPage({super.key, required this.messagesRepository});
+class MessagesPage extends ConsumerStatefulWidget {
+  const MessagesPage({super.key});
 
   @override
-  State<MessagesPage> createState() => MessagesPageState();
+  ConsumerState<MessagesPage> createState() => MessagesPageState();
 }
 
-class MessagesPageState extends State<MessagesPage> {
+class MessagesPageState extends ConsumerState<MessagesPage> {
   TextEditingController messageBoxController = TextEditingController();
 
   @override
   void initState() {
+    Future.delayed(Duration.zero)
+        .then((value) => ref.read(messagesProvider).clearMessages());
     super.initState();
-    MessagesRepository.notSeen = 0;
+  }
+
+  @override
+  void dispose() {
+    messageBoxController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    MessagesRepository messagesRepository = ref.watch(messagesProvider);
     return Scaffold(
       backgroundColor: const Color(0xffe8eddf),
       appBar: AppBar(
@@ -32,11 +40,11 @@ class MessagesPageState extends State<MessagesPage> {
           Expanded(
             child: ListView.builder(
               reverse: true,
-              itemCount: MessagesRepository().messages.length,
+              itemCount: messagesRepository.messages.length,
               itemBuilder: (context, index) {
                 return MessageItem(
-                  message: widget.messagesRepository.messages.reversed
-                      .elementAt(index),
+                  message:
+                      messagesRepository.messages.reversed.elementAt(index),
                 );
               },
             ),
