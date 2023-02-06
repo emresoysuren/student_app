@@ -5,7 +5,6 @@ abstract class People {
   Gender gender;
 
   People(this.name, this.surname, this.yas, this.gender);
-
 }
 
 enum Gender {

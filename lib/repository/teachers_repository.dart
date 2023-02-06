@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_app/people.dart';
+import 'package:student_app/models/people.dart';
+import '../models/teacher.dart';
 
 class TeachersRepository extends ChangeNotifier {
   final List<Teacher> teachers = [
@@ -10,7 +11,3 @@ class TeachersRepository extends ChangeNotifier {
 }
 
 final teachersProvider = ChangeNotifierProvider((ref) => TeachersRepository());
-
-class Teacher extends People {
-  Teacher(name, surname, yas, gender) : super(name, surname, yas, gender);
-}

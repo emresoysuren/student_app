@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_app/people.dart';
 import 'package:student_app/repository/students_repository.dart';
+import '../models/message.dart';
 
 class MessagesRepository extends ChangeNotifier {
   final List<Message> messages = [
@@ -50,11 +50,3 @@ class MessagesRepository extends ChangeNotifier {
 }
 
 final messagesProvider = ChangeNotifierProvider((ref) => MessagesRepository());
-
-class Message {
-  String text;
-  People sender;
-  DateTime time;
-
-  Message(this.text, this.sender, this.time);
-}
