@@ -1,10 +1,10 @@
 abstract class People {
   String name;
   String surname;
-  int yas;
+  int age;
   Gender gender;
 
-  People(this.name, this.surname, this.yas, this.gender);
+  People(this.name, this.surname, this.age, this.gender);
 }
 
 enum Gender {

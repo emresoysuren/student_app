@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_app/models/people.dart';
 import 'package:student_app/repository/teachers_repository.dart';
-
 import '../models/teacher.dart';
+import 'teachers/teachers_add_teacher.dart';
 
 class TeachersPage extends ConsumerWidget {
   const TeachersPage({super.key});
@@ -22,13 +22,22 @@ class TeachersPage extends ConsumerWidget {
           PhysicalModel(
             color: const Color(0xffe7e5df),
             elevation: 8,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(36),
-                child: Text(
-                  "${teachersRepository.teachers.length} Teachers",
+            child: Row(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(36),
+                      child: Text(
+                        "${teachersRepository.teachers.length} Teachers",
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                const Center(
+                  child: TeacherDownloadButton(),
+                )
+              ],
             ),
           ),
           Expanded(
@@ -43,7 +52,55 @@ class TeachersPage extends ConsumerWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          final isCreated = await Navigator.push<bool>(context,
+              MaterialPageRoute(builder: (context) => const AddTeacher()));
+          if (isCreated == true) {
+            print("A teacher is added.");
+          }
+        },
+      ),
     );
+  }
+}
+
+class TeacherDownloadButton extends ConsumerStatefulWidget {
+  const TeacherDownloadButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  ConsumerState<TeacherDownloadButton> createState() =>
+      _TeacherDownloadButtonState();
+}
+
+class _TeacherDownloadButtonState extends ConsumerState<TeacherDownloadButton> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return isLoading
+        ? const CircularProgressIndicator()
+        : IconButton(
+            icon: const Icon(Icons.download_rounded),
+            onPressed: () async {
+              try {
+                setState(() {
+                  isLoading = true;
+                });
+                await ref.read(teachersProvider).download();
+              } catch (e) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(e.toString())));
+              } finally {
+                setState(() {
+                  isLoading = false;
+                });
+              }
+            },
+          );
   }
 }
 

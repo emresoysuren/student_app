@@ -1,5 +1,5 @@
 import 'people.dart';
 
 class Student extends People {
-  Student(name, surname, yas, gender) : super(name, surname, yas, gender);
+  Student(name, surname, age, gender) : super(name, surname, age, gender);
 }
