@@ -42,6 +42,7 @@ class TeachersPage extends ConsumerWidget {
           ),
           Expanded(
             child: ListView.separated(
+              physics: const BouncingScrollPhysics(),
               itemCount: teachersRepository.teachers.length,
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),

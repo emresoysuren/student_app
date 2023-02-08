@@ -3,11 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_app/models/people.dart';
 import 'package:student_app/repository/students_repository.dart';
 
-class StudentsPage extends ConsumerWidget {
+class StudentsPage extends ConsumerStatefulWidget {
   const StudentsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _StudentsPageState();
+}
+
+class _StudentsPageState extends ConsumerState {
+  var _isReloading;
+
+  @override
+  void initState() {
+    _isReloading = Future.delayed(Duration.zero)
+        .then((_) => ref.read(studentsProvider).reloadStudents());
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     StudentsRepository studentsRepository = ref.watch(studentsProvider);
     return Scaffold(
       backgroundColor: const Color(0xffe7e5df),
@@ -30,12 +44,23 @@ class StudentsPage extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              itemCount: studentsRepository.students.length,
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
-              itemBuilder: (BuildContext context, int index) =>
-                  StudentItem(index: index),
+            child: FutureBuilder(
+              future: _isReloading,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasError != true) {
+                  return ListView.separated(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: studentsRepository.students.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                    itemBuilder: (BuildContext context, int index) =>
+                        StudentItem(index: index),
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
             ),
           ),
         ],
@@ -47,7 +72,8 @@ class StudentsPage extends ConsumerWidget {
 class StudentItem extends ConsumerWidget {
   final int index;
 
-  const StudentItem({Key? key, required this.index}) : super(key: key);
+  StudentItem({Key? key, required this.index})
+      : super(key: key ?? Key(index.toString()));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

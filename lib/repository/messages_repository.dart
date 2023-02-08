@@ -1,34 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_app/repository/students_repository.dart';
 import '../models/message.dart';
+import '../models/people.dart';
+import '../models/student.dart';
 
 class MessagesRepository extends ChangeNotifier {
+  Student s1 = Student("James", "Bond", 99, Gender.male);
+  Student s2 = Student("Dora", "The Explorer", 12, Gender.female);
+
   final List<Message> messages = [
     Message(
       "Hello!",
-      StudentsRepository().students[0],
+      Student("James", "Bond", 99, Gender.male),
       DateTime.now().subtract(
         const Duration(minutes: 3),
       ),
     ),
     Message(
       "How are you?",
-      StudentsRepository().students[0],
+      Student("James", "Bond", 99, Gender.male),
       DateTime.now().subtract(
         const Duration(minutes: 3),
       ),
     ),
     Message(
       "Oh, hi!",
-      StudentsRepository().students[1],
+      Student("Dora", "The Explorer", 12, Gender.female),
       DateTime.now().subtract(
         const Duration(minutes: 3),
       ),
     ),
     Message(
       "I'm fine.",
-      StudentsRepository().students[1],
+      Student("Dora", "The Explorer", 12, Gender.female),
       DateTime.now().subtract(
         const Duration(minutes: 3),
       ),

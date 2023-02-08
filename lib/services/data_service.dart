@@ -1,11 +1,29 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student_app/models/student.dart';
 import 'package:student_app/models/teacher.dart';
 import 'package:http/http.dart' as http;
 
 class DataService {
   final String baseUrl = "/* baseUrl */";
+
+  Future<List<Student>> studentDownloadAll() async {
+    final response = await http.get(Uri.parse("$baseUrl/students"));
+    List<dynamic> list = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      List<Student> result = [];
+      for (Map<String, dynamic> m in list) {
+        result.add(Student.fromMap(m));
+      }
+      return result;
+    } else {
+      throw Exception('Failed to download students! ${response.statusCode}');
+    }
+  }
+
+  // #TeacherAPI
 
   Future<Teacher> teacherDownload() async {
     final response =

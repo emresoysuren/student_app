@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_app/repository/messages_repository.dart';
@@ -82,18 +84,21 @@ class HomePage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextButton(
-              onPressed: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const MessagesPage(),
+            Transform.rotate(
+              angle: pi * 1.1,
+              child: TextButton(
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const MessagesPage(),
+                    ),
+                  );
+                },
+                child: Text(
+                  "${messagesRepository.notSeen} new messages",
+                  style: const TextStyle(
+                    color: Colors.blue,
                   ),
-                );
-              },
-              child: Text(
-                "${messagesRepository.notSeen} new messages",
-                style: const TextStyle(
-                  color: Colors.blue,
                 ),
               ),
             ),
