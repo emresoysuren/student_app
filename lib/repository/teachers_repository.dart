@@ -9,7 +9,7 @@ class TeachersRepository extends ChangeNotifier {
 
   TeachersRepository(this.dataService);
 
-  final List<Teacher> teachers = [
+  List<Teacher> teachers = [
     Teacher("Salvador", "Dali", 34, Gender.male),
     Teacher("Bruce", "Wayne", 21, Gender.male),
   ];
@@ -26,8 +26,15 @@ class TeachersRepository extends ChangeNotifier {
     teachers.add(teacher);
     notifyListeners();
   }
+
+  Future<List<Teacher>> getAll() async {
+    teachers = await dataService.teacherDownloadAll();
+    return teachers;
+  }
 }
 
 final teachersProvider = ChangeNotifierProvider(
   (ref) => TeachersRepository(ref.watch(dataServiceProvider)),
 );
+
+final teachersListProvider = FutureProvider((ref) => ref.watch(teachersProvider).getAll());

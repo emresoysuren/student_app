@@ -114,21 +114,30 @@ class _AddTeacherState extends ConsumerState<AddTeacher> {
   }
 
   void _save() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      await ref
-          .read(teachersProvider)
-          .uploadTeacher(Teacher.fromMap(_formData));
-      Navigator.of(context).pop(true);
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
+    bool loop = true;
+
+    while (loop) {
+      try {
+        setState(() {
+          isLoading = true;
+        });
+        await runSave();
+        loop = false;
+        Navigator.of(context).pop(true);
+      } catch (e) {
+        final snackBar = ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+        await snackBar.closed;
+      } finally {
+        setState(() {
+          isLoading = false;
+          loop = false;
+        });
+      }
     }
+  }
+
+  Future<void> runSave() async {
+    await ref.read(teachersProvider).uploadTeacher(Teacher.fromMap(_formData));
   }
 }

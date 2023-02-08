@@ -41,14 +41,27 @@ class TeachersPage extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              itemCount: teachersRepository.teachers.length,
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
-              itemBuilder: (BuildContext context, int index) => TeacherItem(
-                teacher: teachersRepository.teachers.elementAt(index),
-              ),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.refresh(teachersListProvider);
+              },
+              child: ref.watch(teachersListProvider).when(
+                    data: (data) => ListView.separated(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: data.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                      itemBuilder: (BuildContext context, int index) =>
+                          TeacherItem(
+                        teacher: data.elementAt(index),
+                      ),
+                    ),
+                    error: (error, stackTrace) => const SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Text("Error!")),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                  ),
             ),
           ),
         ],
@@ -59,7 +72,8 @@ class TeachersPage extends ConsumerWidget {
           final isCreated = await Navigator.push<bool>(context,
               MaterialPageRoute(builder: (context) => const AddTeacher()));
           if (isCreated == true) {
-            print("A teacher is added.");
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("A teacher is added.")));
           }
         },
       ),

@@ -10,14 +10,10 @@ class DataService {
 
   Future<List<Student>> studentDownloadAll() async {
     final response = await http.get(Uri.parse("$baseUrl/students"));
-    List<dynamic> list = jsonDecode(response.body);
+    final List<dynamic> list = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      List<Student> result = [];
-      for (Map<String, dynamic> m in list) {
-        result.add(Student.fromMap(m));
-      }
-      return result;
+      return list.map<Student>((e) => Student.fromMap(e)).toList();
     } else {
       throw Exception('Failed to download students! ${response.statusCode}');
     }
@@ -40,7 +36,7 @@ class DataService {
     final response = await http.post(
       Uri.parse("$baseUrl/teachers"),
       headers: <String, String>{
-        "Contect-Type": "apploication/json; chatset=UTF-8",
+        "Content-Type": "application/json; charset=UTF-8",
       },
       body: jsonEncode(teacher.toMap()),
     );
@@ -48,6 +44,17 @@ class DataService {
       return;
     } else {
       throw Exception('Failed to upload teachers! ${response.statusCode}');
+    }
+  }
+
+  Future<List<Teacher>> teacherDownloadAll() async {
+    final response = await http.get(Uri.parse("$baseUrl/teachers"));
+    final List<dynamic> list = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return list.map<Teacher>((e) => Teacher.fromMap(e)).toList();
+    } else {
+      throw Exception('Failed to download students! ${response.statusCode}');
     }
   }
 }
